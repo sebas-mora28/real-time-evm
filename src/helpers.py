@@ -1,0 +1,88 @@
+import cv2 
+import numpy as np
+
+def show_frame(frame, heart_rate):
+    cv2.putText(frame, 
+                f"BPM: {heart_rate}", 
+                org=(50, 50), 
+                fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                fontScale=1, 
+                color=(0, 255, 0),
+                thickness=2, 
+                lineType=cv2.LINE_AA)
+    
+    cv2.imshow("Heart Rate Monitor", frame)
+
+def load_video(path):
+    frames = []
+    video = cv2.VideoCapture(path)
+    fps = video.get(cv2.CAP_PROP_FPS)
+    while video.isOpened():
+        success, frame = video.read()
+
+        if not success:
+            break
+
+        rgb_frame = frame[:, :, ::-1] 
+        #gpu_frame = cv2.cuda_GpuMat()
+        #gpu_frame.upload(rgb_frame)
+        #rgb_frame = cv2.resize(rgb_frame, (500 , 500))
+        frames.append(rgb_frame)
+        #frames.append(rgb_frame)
+
+    video.release()
+
+    return np.asarray(frames), fps
+
+
+def save_video(frames, filename, fps=30):
+    """
+    Saves a video from a NumPy array of shape (N, H, W, 3).
+    
+    Args:
+        frames: NumPy array of shape (num_frames, height, width, 3)
+        filename: Output video filename (e.g., "output.avi" or "output.mp4")
+        fps: Frames per second (default is 30)
+    """
+    height, width = frames[0].shape[:2]
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v') if filename.endswith(".mp4") else cv2.VideoWriter_fourcc(*'XVID')
+    
+    out = cv2.VideoWriter(filename, fourcc, fps, (width, height))
+    
+    for i in range(len(frames)):
+
+        # Convert from float32 to uint8 if needed
+        frame = frames[i]
+        if frame.dtype != np.uint8:
+            frame = np.clip(frame * 255, 0, 255).astype(np.uint8)
+        
+        out.write(frame)
+    
+    out.release()
+    print(f"Video saved to {filename}")
+
+
+def collapse_laplacian_video_pyramid(video, frame_ct):
+    collapsed_video = []
+
+    for i in range(frame_ct):
+        prev_frame = video[-1][i]
+
+        for level in range(len(video) - 1, 0, -1):
+            pyr_up_frame = cv2.pyrUp(prev_frame)
+            (height, width, depth) = pyr_up_frame.shape
+            prev_level_frame = video[level - 1][i]
+            prev_level_frame = cv2.resize(prev_level_frame, (width, height))
+            prev_frame = pyr_up_frame + prev_level_frame
+
+        # Normalize pixel values
+        min_val = min(0.0, prev_frame.min())
+        prev_frame = prev_frame + min_val
+        max_val = max(1.0, prev_frame.max())
+        prev_frame = prev_frame / max_val
+        prev_frame = prev_frame * 255
+
+        prev_frame = cv2.convertScaleAbs(prev_frame)
+        collapsed_video.append(prev_frame)
+
+    return collapsed_video
