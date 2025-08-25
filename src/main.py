@@ -10,11 +10,13 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
+gst_str = ("v4l2src device=/dev/video0 ! "
+           "video/x-raw, width=640, height=480, framerate=30/1 ! "
+           "videoconvert ! video/x-raw, format=BGR ! appsink")
 
-cam = cv2.VideoCapture(0)
-cam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
+# Crear objeto de captura de video con GStreamer
+cam = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
 
 frames_buffer = deque(maxlen=BUFFER_SIZE)
 
