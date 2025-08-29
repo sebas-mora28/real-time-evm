@@ -1,7 +1,7 @@
 import cv2 
 import numpy as np
 
-def show_frame(frame, heart_rate):
+def show_frame(frame, heart_rate, roi):
     cv2.putText(frame, 
                 f"BPM: {heart_rate}", 
                 org=(50, 50), 
@@ -24,11 +24,7 @@ def load_video(path):
             break
 
         rgb_frame = frame[:, :, ::-1] 
-        #gpu_frame = cv2.cuda_GpuMat()
-        #gpu_frame.upload(rgb_frame)
-        #rgb_frame = cv2.resize(rgb_frame, (500 , 500))
         frames.append(rgb_frame)
-        #frames.append(rgb_frame)
 
     video.release()
 
@@ -60,29 +56,3 @@ def save_video(frames, filename, fps=30):
     
     out.release()
     print(f"Video saved to {filename}")
-
-
-def collapse_laplacian_video_pyramid(video, frame_ct):
-    collapsed_video = []
-
-    for i in range(frame_ct):
-        prev_frame = video[-1][i]
-
-        for level in range(len(video) - 1, 0, -1):
-            pyr_up_frame = cv2.pyrUp(prev_frame)
-            (height, width, depth) = pyr_up_frame.shape
-            prev_level_frame = video[level - 1][i]
-            prev_level_frame = cv2.resize(prev_level_frame, (width, height))
-            prev_frame = pyr_up_frame + prev_level_frame
-
-        # Normalize pixel values
-        min_val = min(0.0, prev_frame.min())
-        prev_frame = prev_frame + min_val
-        max_val = max(1.0, prev_frame.max())
-        prev_frame = prev_frame / max_val
-        prev_frame = prev_frame * 255
-
-        prev_frame = cv2.convertScaleAbs(prev_frame)
-        collapsed_video.append(prev_frame)
-
-    return collapsed_video
