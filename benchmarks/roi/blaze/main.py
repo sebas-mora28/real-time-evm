@@ -9,7 +9,9 @@ net = BlazeFace()
 net.load_weights("blazeface.pth")  # download from official repo
 net.load_anchors("anchors.npy")     # required anchor points
 net.min_score = 0.5
-net = net.cuda() if torch.cuda.is_available() else net
+print(torch.cuda.is_available())
+net = net.to("cuda")
+net.anchors = net.anchors.to("cuda") 
 print("Finish to load")
 
 cap = cv2.VideoCapture(0)
@@ -32,7 +34,7 @@ while True:
     for x1, y1, x2, y2, conf in faces:
         cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0,255,0), 2)
     
-    #cv2.imshow("BlazeFace Detection", frame)
+    cv2.imshow("BlazeFace Detection", frame)
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 

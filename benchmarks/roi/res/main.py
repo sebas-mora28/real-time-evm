@@ -9,11 +9,12 @@ model_path = "res10_300x300_ssd_iter_140000.caffemodel"
 net = cv2.dnn.readNetFromCaffe(prototxt_path, model_path)
 
 # Enable CUDA backend (Jetson Nano GPU)
-net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
-net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+#net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+#net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
 # Load an image
-image = cv2.imread("test.jpg")
+image = cv2.imread("face.png")
+print(image)
 (h, w) = image.shape[:2]
 
 # Prepare input blob
@@ -43,5 +44,8 @@ for i in range(detections.shape[2]):
         cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
 # Show result
-cv2.imshow("Face Detection (CUD
+print(image.shape)
+cv2.imshow("Face Detection (CUDA)", image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
