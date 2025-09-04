@@ -9,7 +9,5 @@ def detect_roi(frame):
   frame_roi = None
   if len(faces) > 0:
     (x, y, w, h) = faces[0] 
-    frame_roi = frame[y: y+h, x: x+w]
-    frame_roi = cv2.resize(frame_roi, (320, 320))
-    cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+    frame_roi = (x, y, w , h)
   return frame_roi

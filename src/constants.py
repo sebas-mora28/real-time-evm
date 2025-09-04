@@ -1,7 +1,7 @@
 #                          ______________________________ 
 # ________________________/ Video processing
 
-INTERVAL_SECONDS = 5
+INTERVAL_SECONDS = 8
 
 
 
@@ -12,7 +12,7 @@ INTERVAL_SECONDS = 5
 FREQ_MIN = 0.8     # 0.8 Hz (48 BPM)
 FREQ_MAX = 3    # 3.0 Hz (180 BPM)
 LEVELS=3
-BUFFER_SIZE = 150  # ~5 seconds at 30 FPS
+BUFFER_SIZE = 240  # ~5 seconds at 30 FPS
 FPS=30
 
 

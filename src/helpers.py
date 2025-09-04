@@ -1,7 +1,18 @@
 import cv2 
 import numpy as np
 
-def show_frame(frame, heart_rate, roi):
+
+heart_rate = None
+roi = None 
+
+def show_frame(frame, result):
+    global heart_rate, roi
+
+    if(len(result) != 0):
+        values = result.pop()
+        heart_rate = values['heart_rate']
+        roi = values['roi']
+
     cv2.putText(frame, 
                 f"BPM: {heart_rate}", 
                 org=(50, 50), 
@@ -11,6 +22,11 @@ def show_frame(frame, heart_rate, roi):
                 thickness=2, 
                 lineType=cv2.LINE_AA)
     
+    if(roi is not None):
+        (x, y, w, h) = roi 
+        cv2.rectangle(frame, (x, y), (x + w, y + h), color=(0, 255, 0), thickness=2)
+    
+
     cv2.imshow("Heart Rate Monitor", frame)
 
 def load_video(path):

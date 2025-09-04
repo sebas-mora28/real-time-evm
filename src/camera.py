@@ -11,7 +11,7 @@ gst_str = ("v4l2src device=/dev/video0 ! "
 # Crear objeto de captura de video con GStreamer
 cam = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
 
-def capture_frames(buffer: deque, roi: list[int], stop_event: threading.Event):
+def capture_frames(buffer: deque, result, stop_event):
 
   while(True):
 	
@@ -20,7 +20,7 @@ def capture_frames(buffer: deque, roi: list[int], stop_event: threading.Event):
       break
 
     buffer.append(frame)
-    show_frame(frame, roi)
+    show_frame(frame, result)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         stop_event.set()
