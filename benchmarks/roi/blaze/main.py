@@ -15,6 +15,9 @@ net.anchors = net.anchors.to("cuda")
 print("Finish to load")
 
 cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+
 
 while True:
     ret, frame = cap.read()
@@ -29,6 +32,8 @@ while True:
     faces = net.predict_on_image(img_tensor[0])
     end= time.time()
     print("Time: ", (end - start)*1000)
+
+    print(faces)
 
     # Draw boxes
     for x1, y1, x2, y2, conf in faces:
