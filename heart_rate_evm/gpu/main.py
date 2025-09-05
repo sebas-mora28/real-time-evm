@@ -1,10 +1,8 @@
 import threading
-import multiprocessing
-from buffer import Buffer
 from apply_evm import apply_evm
 from camera import capture_frames
 from collections import deque
-from constants import BUFFER_SIZE
+from core.constants import BUFFER_SIZE
 
 
 if __name__ == '__main__':

@@ -1,14 +1,12 @@
-from evm.pyramid import get_gaussian_pyramid, get_gaussian_pyramid_gpu
+from evm.pyramid import get_gaussian_pyramid
 from evm.filter import bandpass_filter
-from heart_rate import find_heart_rate
-from roi import detect_roi
-from constants import BUFFER_SIZE, FREQ_MIN, FREQ_MAX, FPS, LEVELS
+from core.heart_rate import find_heart_rate
+from core.roi import detect_roi
+from core.constants import BUFFER_SIZE, FREQ_MIN, FREQ_MAX, FPS, LEVELS
 import numpy as np
 import threading
 from collections import deque
 import time
-from cupyx.scipy.ndimage import gaussian_filter
-import cupy as cp
 
 buffer_bpm = deque(maxlen=30)
 
@@ -18,7 +16,6 @@ def apply_evm(buffer: deque, result: deque, stopEvent: threading.Event):
     freqs = np.fft.fftfreq(BUFFER_SIZE, d=1.0 / FPS)
     mask = (freqs >= FREQ_MIN) & (freqs <= FREQ_MAX)
 
-    print(freqs)
 
     while(True):
 
@@ -43,9 +40,8 @@ def apply_evm(buffer: deque, result: deque, stopEvent: threading.Event):
             roi_frames = np.asarray(roi_frames).astype(np.float32)
            
             start_pyramid = time.time()
-            frames_gpu = cp.stack([cp.asarray(f) for f in roi_frames])
-            green_channel = frames_gpu[:, :, :, 1]
-            pyramid = get_gaussian_pyramid_gpu(green_channel, LEVELS)
+            green_channel_frames = roi_frames[:, :, :, 1]
+            pyramid = get_gaussian_pyramid(green_channel_frames, LEVELS)
 
             # pyramid = []
             # for frame in roi_frames:

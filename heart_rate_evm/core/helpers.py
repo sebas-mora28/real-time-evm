@@ -1,12 +1,10 @@
 import cv2 
 import numpy as np
 
-
-heart_rate = None
-roi = None 
-
 def show_frame(frame, result):
-    global heart_rate, roi
+    
+    heart_rate = None
+    roi = None
 
     if(len(result) != 0):
         values = result.pop()
