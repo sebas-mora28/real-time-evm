@@ -6,16 +6,16 @@ from core.roi import detect_roi
 from core.heart_rate import find_heart_rate
 from .evm.pyramid import generate_gaussian_pyramids
 from .evm.filter import bandpass_filter
-from core.constants import FREQ_MIN, FREQ_MAX, FPS, LEVELS
+from core.constants import FREQ_MIN, FREQ_MAX, FPS, LEVELS, BUFFER_SIZE
 
 
 cam = cv2.VideoCapture(0)
 cam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
-def capture_frames(buffer: deque, result, stop_event):
+def main():
 
-  buffer = deque(maxlen=240)
+  buffer = deque(maxlen=BUFFER_SIZE)
   result = deque(maxlen=1)
 
   while(True):
@@ -46,16 +46,20 @@ def capture_frames(buffer: deque, result, stop_event):
       filtered_fft, freqs = bandpass_filter(pyramids, FPS, FREQ_MIN, FREQ_MAX)
       heart_rate = find_heart_rate(filtered_fft, freqs)
 
+      print("heart rate: ", heart_rate)
+
       buffer.clear()
 
-      print("Heart rate: ", heart_rate)
-      result = {"heart_rate": heart_rate}
+      result.append({"heart_rate": heart_rate})
     
     show_frame(frame, result)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
-        stop_event.set()
         break
 
   cam.release()
   cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+  main()

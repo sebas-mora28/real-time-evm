@@ -70,10 +70,6 @@ def apply_evm(buffer: deque, result: deque, stopEvent: threading.Event):
 
             result.append({"heart_rate": avg_bpm, "roi": roi})
 
-            
-
-            print(f"")
-
 
     
             

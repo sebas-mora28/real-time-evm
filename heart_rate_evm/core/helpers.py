@@ -1,16 +1,23 @@
 import cv2 
 import numpy as np
 
-def show_frame(frame, result):
-    
-    heart_rate = None
-    roi = None
+heart_rate = None 
+roi = None
 
+def show_frame(frame, result):
+    global heart_rate, roi
+    
+    print(result)
     if(len(result) != 0):
         values = result.pop()
-        heart_rate = values['heart_rate']
-        roi = values['roi']
+        print('heart_rate' in values)
+        if('heart_rate' in values):
+            heart_rate = int(values['heart_rate'])
+            print(heart_rate)
+        if('roi' in values):
+            roi = values['roi']
 
+    print(heart_rate)
     cv2.putText(frame, 
                 f"BPM: {heart_rate}", 
                 org=(50, 50), 

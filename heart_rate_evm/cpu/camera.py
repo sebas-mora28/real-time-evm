@@ -56,10 +56,7 @@ def capture_frames(buffer: deque, result, stop_event):
 
       print("Heart rate: ", heart_rate)
 
-
-       
-
-       
+ 
     show_frame(frame, ())
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
